@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Пользователи{% endblock %}
+
+{% block content %}
+<section class="page-head">
+    <h1>Пользователи</h1>
+    <p class="muted">На этой странице можно подписываться и переходить в профили.</p>
+</section>
+
+<section class="card-list">
+    {% for user in users %}
+        <article class="card user-card">
+            <div class="user-row">
+                <div>
+                    <h2>
+                        <a href="{{ url_for('profile', username=user.username) }}">@{{ user.username }}</a>
+                    </h2>
+                    <p class="muted">{{ user.email }}</p>
+                </div>
+
+                <div class="stats">
+                    <span>Публичных постов: {{ user.posts.filter_by(is_public=True).count() }}</span>
+                    <span>Подписчики: {{ user.followers.count() }}</span>
+                    <span>Подписки: {{ user.following.count() }}</span>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <a class="ghost-btn" href="{{ url_for('profile', username=user.username) }}">Открыть профиль</a>
+
+                {% if current_user.is_authenticated and current_user.id != user.id %}
+                    {% if current_user.is_following(user) %}
+                        <form method="post" action="{{ url_for('unfollow_user', username=user.username) }}">
+                            <button type="submit" class="danger-btn">Отписаться</button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{{ url_for('follow_user', username=user.username) }}">
+                            <button type="submit" class="primary-btn">Подписаться</button>
+                        </form>
+                    {% endif %}
+                {% elif not current_user.is_authenticated %}
+                    <a class="primary-btn" href="{{ url_for('login') }}">Войти для подписки</a>
+                {% endif %}
+            </div>
+        </article>
+    {% else %}
+        <div class="empty-state">Пользователей пока нет.</div>
+    {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="form-card">
+    <h1>{{ page_title }}</h1>
+
+    <form method="post" class="main-form">
+        <label for="title">Заголовок</label>
+        <input
+            type="text"
+            id="title"
+            name="title"
+            maxlength="150"
+            required
+            value="{{ post.title if post else request.form.get('title', '') }}"
+        >
+
+        <label for="content">Текст поста</label>
+        <textarea id="content" name="content" rows="10" required>{{ post.content if post else request.form.get('content', '') }}</textarea>
+
+        <label for="tags">Теги через запятую</label>
+        <input
+            type="text"
+            id="tags"
+            name="tags"
+            placeholder="python, flask, sqlite"
+            value="{% if post %}{% for tag in post.tags %}{{ tag.name }}{% if not loop.last %}, {% endif %}{% endfor %}{% else %}{{ request.form.get('tags', '') }}{% endif %}"
+        >
+
+        <label for="visibility">Тип поста</label>
+        <select id="visibility" name="visibility">
+            <option value="public" {% if not post or post.is_public %}selected{% endif %}>Публичный</option>
+            <option value="hidden" {% if post and not post.is_public %}selected{% endif %}>Скрытый - только по запросу</option>
+        </select>
+
+        <p class="muted">
+            Для скрытого поста система создаст секретную ссылку. Такой пост не попадет в публичный список и в общую ленту.
+        </p>
+
+        <button type="submit" class="primary-btn">{{ submit_text }}</button>
+    </form>
+
+    {% if post and not post.is_public %}
+        <div class="info-box">
+            <strong>Текущая секретная ссылка:</strong>
+            <div class="mono">{{ request.url_root.rstrip('/') }}{{ url_for('hidden_post_detail', token=post.access_token) }}</div>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
