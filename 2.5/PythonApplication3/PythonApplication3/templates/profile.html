@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль @{{ user.username }}{% endblock %}
+
+{% block content %}
+<section class="page-head">
+    <h1>Профиль @{{ user.username }}</h1>
+    <p class="muted">Всего путешествий: {{ trips|length }}</p>
+</section>
+
+<section class="trip-grid">
+    {% for trip in trips %}
+        <article class="card">
+            {% if trip.image_url %}
+                <img class="card-image" src="{{ trip.image_url }}" alt="{{ trip.title }}">
+            {% endif %}
+
+            <div class="card-body">
+                <h2>
+                    <a href="{{ url_for('trip_detail', trip_id=trip.id) }}">{{ trip.title }}</a>
+                </h2>
+
+                <p><strong>Место:</strong> {{ trip.city }}, {{ trip.country }}</p>
+                <p><strong>Даты:</strong> {{ trip.start_date.strftime('%d.%m.%Y') }} - {{ trip.end_date.strftime('%d.%m.%Y') }}</p>
+
+                {% if trip.budget is not none %}
+                    <p><strong>Стоимость:</strong> {{ "%.2f"|format(trip.budget) }}</p>
+                {% endif %}
+
+                <p class="content-preview">{{ trip.story|truncate(160) }}</p>
+
+                <div class="card-actions">
+                    <a class="primary-btn" href="{{ url_for('trip_detail', trip_id=trip.id) }}">Открыть запись</a>
+                </div>
+            </div>
+        </article>
+    {% else %}
+        <div class="empty-state">У пользователя пока нет записей о путешествиях.</div>
+    {% endfor %}
+</section>
+{% endblock %}

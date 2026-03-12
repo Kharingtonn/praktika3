@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ trip.title }}{% endblock %}
+
+{% block content %}
+<article class="detail-card">
+    {% if trip.image_url %}
+        <img class="detail-image" src="{{ trip.image_url }}" alt="{{ trip.title }}">
+    {% endif %}
+
+    <header class="page-head">
+        <h1>{{ trip.title }}</h1>
+        <p class="muted">
+            Автор:
+            <a href="{{ url_for('profile', username=trip.author.username) }}">@{{ trip.author.username }}</a>
+        </p>
+    </header>
+
+    <section class="info-grid">
+        <div class="info-box">
+            <h3>Локация</h3>
+            <p>{{ trip.city }}, {{ trip.country }}</p>
+            {% if trip.latitude is not none and trip.longitude is not none %}
+                <p>Широта: {{ trip.latitude }}</p>
+                <p>Долгота: {{ trip.longitude }}</p>
+                <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://www.openstreetmap.org/?mlat={{ trip.latitude }}&mlon={{ trip.longitude }}#map=11/{{ trip.latitude }}/{{ trip.longitude }}"
+                >
+                    Открыть точку на карте
+                </a>
+            {% else %}
+                <p class="muted">Геокоординаты не указаны.</p>
+            {% endif %}
+        </div>
+
+        <div class="info-box">
+            <h3>Даты и продолжительность</h3>
+            <p>Начало: {{ trip.start_date.strftime('%d.%m.%Y') }}</p>
+            <p>Окончание: {{ trip.end_date.strftime('%d.%m.%Y') }}</p>
+            <p>Продолжительность: {{ trip.duration_days }} дн.</p>
+        </div>
+
+        <div class="info-box">
+            <h3>Стоимость</h3>
+            {% if trip.budget is not none %}
+                <p>{{ "%.2f"|format(trip.budget) }}</p>
+            {% else %}
+                <p class="muted">Стоимость не указана.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="content-block">
+        <h2>Описание путешествия</h2>
+        <div class="pre-line">{{ trip.story }}</div>
+    </section>
+
+    <section class="two-col">
+        <div class="content-block">
+            <h2>Места культурного наследия</h2>
+            {% if trip.heritage_sites %}
+                <div class="pre-line">{{ trip.heritage_sites }}</div>
+            {% else %}
+                <p class="muted">Не указано.</p>
+            {% endif %}
+        </div>
+
+        <div class="content-block">
+            <h2>Места для посещения</h2>
+            {% if trip.places_to_visit %}
+                <div class="pre-line">{{ trip.places_to_visit }}</div>
+            {% else %}
+                <p class="muted">Не указано.</p>
+            {% endif %}
+        </div>
+    </section>
+</article>
+{% endblock %}

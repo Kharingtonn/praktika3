@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Все путешествия{% endblock %}
+
+{% block content %}
+<section class="page-head">
+    <h1>Путешествия пользователей</h1>
+    <p class="muted">
+        Здесь можно просматривать записи других пользователей, искать по стране и имени автора.
+    </p>
+</section>
+
+<section class="panel">
+    <form method="get" class="filter-form">
+        <div>
+            <label for="country">Страна</label>
+            <input
+                type="text"
+                id="country"
+                name="country"
+                placeholder="Например, Италия"
+                value="{{ current_country }}"
+            >
+        </div>
+
+        <div>
+            <label for="author">Автор</label>
+            <input
+                type="text"
+                id="author"
+                name="author"
+                placeholder="Например, anna"
+                value="{{ current_author }}"
+            >
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="primary-btn">Найти</button>
+            <a href="{{ url_for('index') }}" class="ghost-btn">Сбросить</a>
+        </div>
+    </form>
+</section>
+
+<section class="trip-grid">
+    {% for trip in trips %}
+        <article class="card">
+            {% if trip.image_url %}
+                <img class="card-image" src="{{ trip.image_url }}" alt="{{ trip.title }}">
+            {% endif %}
+
+            <div class="card-body">
+                <h2>
+                    <a href="{{ url_for('trip_detail', trip_id=trip.id) }}">{{ trip.title }}</a>
+                </h2>
+
+                <p class="muted">
+                    Автор:
+                    <a href="{{ url_for('profile', username=trip.author.username) }}">@{{ trip.author.username }}</a>
+                </p>
+
+                <p><strong>Место:</strong> {{ trip.city }}, {{ trip.country }}</p>
+                <p><strong>Даты:</strong> {{ trip.start_date.strftime('%d.%m.%Y') }} - {{ trip.end_date.strftime('%d.%m.%Y') }}</p>
+
+                {% if trip.budget is not none %}
+                    <p><strong>Стоимость:</strong> {{ "%.2f"|format(trip.budget) }}</p>
+                {% endif %}
+
+                <p class="content-preview">{{ trip.story|truncate(180) }}</p>
+
+                <div class="card-actions">
+                    <a class="primary-btn" href="{{ url_for('trip_detail', trip_id=trip.id) }}">Открыть запись</a>
+                </div>
+            </div>
+        </article>
+    {% else %}
+        <div class="empty-state">По заданным параметрам путешествия не найдены.</div>
+    {% endfor %}
+</section>
+{% endblock %}

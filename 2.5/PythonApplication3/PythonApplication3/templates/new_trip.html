@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Новая запись о путешествии{% endblock %}
+
+{% block content %}
+<section class="form-card">
+    <h1>Новая запись о путешествии</h1>
+
+    <form method="post" class="main-form">
+        <label for="title">Название путешествия</label>
+        <input
+            type="text"
+            id="title"
+            name="title"
+            required
+            value="{{ request.form.get('title', '') }}"
+        >
+
+        <div class="two-col">
+            <div>
+                <label for="country">Страна</label>
+                <input
+                    type="text"
+                    id="country"
+                    name="country"
+                    required
+                    value="{{ request.form.get('country', '') }}"
+                >
+            </div>
+
+            <div>
+                <label for="city">Город / местоположение</label>
+                <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    required
+                    value="{{ request.form.get('city', '') }}"
+                >
+            </div>
+        </div>
+
+        <div class="two-col">
+            <div>
+                <label for="start_date">Дата начала</label>
+                <input
+                    type="date"
+                    id="start_date"
+                    name="start_date"
+                    required
+                    value="{{ request.form.get('start_date', '') }}"
+                >
+            </div>
+
+            <div>
+                <label for="end_date">Дата окончания</label>
+                <input
+                    type="date"
+                    id="end_date"
+                    name="end_date"
+                    required
+                    value="{{ request.form.get('end_date', '') }}"
+                >
+            </div>
+        </div>
+
+        <label for="story">Описание путешествия</label>
+        <textarea
+            id="story"
+            name="story"
+            rows="8"
+            required
+        >{{ request.form.get('story', '') }}</textarea>
+
+        <section class="sub-panel">
+            <h2>Дополнительные функции путешествия</h2>
+            <p class="muted">
+                В этой версии реализованы: геопозиция, изображение места, стоимость путешествия,
+                культурное наследие и места для посещения.
+            </p>
+
+            <div class="card-actions">
+                <button type="button" id="get-location" class="ghost-btn">Определить мою геопозицию</button>
+            </div>
+
+            <div class="two-col">
+                <div>
+                    <label for="latitude">Широта</label>
+                    <input
+                        type="number"
+                        step="0.000001"
+                        id="latitude"
+                        name="latitude"
+                        value="{{ request.form.get('latitude', '') }}"
+                    >
+                </div>
+
+                <div>
+                    <label for="longitude">Долгота</label>
+                    <input
+                        type="number"
+                        step="0.000001"
+                        id="longitude"
+                        name="longitude"
+                        value="{{ request.form.get('longitude', '') }}"
+                    >
+                </div>
+            </div>
+
+            <label for="image_url">Ссылка на изображение места</label>
+            <input
+                type="url"
+                id="image_url"
+                name="image_url"
+                placeholder="https://example.com/image.jpg"
+                value="{{ request.form.get('image_url', '') }}"
+            >
+
+            <label for="budget">Стоимость путешествия</label>
+            <input
+                type="number"
+                step="0.01"
+                id="budget"
+                name="budget"
+                placeholder="Например, 850.50"
+                value="{{ request.form.get('budget', '') }}"
+            >
+
+            <label for="heritage_sites">Места культурного наследия</label>
+            <textarea
+                id="heritage_sites"
+                name="heritage_sites"
+                rows="4"
+                placeholder="Каждое место можно писать с новой строки"
+            >{{ request.form.get('heritage_sites', '') }}</textarea>
+
+            <label for="places_to_visit">Места для посещения</label>
+            <textarea
+                id="places_to_visit"
+                name="places_to_visit"
+                rows="4"
+                placeholder="Например: музей, парк, исторический центр"
+            >{{ request.form.get('places_to_visit', '') }}</textarea>
+        </section>
+
+        <button type="submit" class="primary-btn">Сохранить запись</button>
+    </form>
+</section>
+
+<script>
+document.getElementById("get-location").addEventListener("click", function () {
+    if (!navigator.geolocation) {
+        alert("Ваш браузер не поддерживает геолокацию.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        function (position) {
+            document.getElementById("latitude").value = position.coords.latitude.toFixed(6);
+            document.getElementById("longitude").value = position.coords.longitude.toFixed(6);
+        },
+        function () {
+            alert("Не удалось определить геопозицию.");
+        }
+    );
+});
+</script>
+{% endblock %}

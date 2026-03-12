@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<section class="form-card">
+    <h1>Вход</h1>
+
+    <form method="post" class="main-form">
+        <label for="username">Имя пользователя</label>
+        <input
+            type="text"
+            id="username"
+            name="username"
+            required
+            value="{{ request.form.get('username', '') }}"
+        >
+
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit" class="primary-btn">Войти</button>
+    </form>
+
+    <p class="muted">
+        Нет аккаунта?
+        <a href="{{ url_for('register') }}">Зарегистрироваться</a>
+    </p>
+</section>
+{% endblock %}
