@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог книг{% endblock %}
+
+{% block content %}
+<section class="page-head">
+    <h1>Каталог книг</h1>
+    <p class="muted">Пользовательский интерфейс для просмотра, сортировки, покупки и аренды книг.</p>
+</section>
+
+<section class="panel">
+    <form method="get" class="filter-form">
+        <div>
+            <label for="category">Категория</label>
+            <select name="category" id="category">
+                <option value="">Все категории</option>
+                {% for category in categories %}
+                    <option value="{{ category }}" {% if current_category == category %}selected{% endif %}>
+                        {{ category }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="author">Автор</label>
+            <select name="author" id="author">
+                <option value="">Все авторы</option>
+                {% for author in authors %}
+                    <option value="{{ author }}" {% if current_author == author %}selected{% endif %}>
+                        {{ author }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="sort">Сортировка</label>
+            <select name="sort" id="sort">
+                <option value="title" {% if current_sort == "title" %}selected{% endif %}>По названию</option>
+                <option value="author" {% if current_sort == "author" %}selected{% endif %}>По автору</option>
+                <option value="category" {% if current_sort == "category" %}selected{% endif %}>По категории</option>
+                <option value="year_asc" {% if current_sort == "year_asc" %}selected{% endif %}>Год по возрастанию</option>
+                <option value="year_desc" {% if current_sort == "year_desc" %}selected{% endif %}>Год по убыванию</option>
+            </select>
+        </div>
+
+        <div class="filter-buttons">
+            <button type="submit" class="primary-btn">Применить</button>
+            <a href="{{ url_for('index') }}" class="ghost-btn">Сбросить</a>
+        </div>
+    </form>
+</section>
+
+<section class="grid-books">
+    {% for book in books %}
+        <article class="card">
+            <div class="card-top">
+                <span class="status status-{{ book.status }}">{{ book.status }}</span>
+                <span class="muted">В наличии: {{ book.available_copies }}</span>
+            </div>
+
+            <h2><a href="{{ url_for('book_detail', book_id=book.id) }}">{{ book.title }}</a></h2>
+
+            <p class="muted"><strong>Автор:</strong> {{ book.author }}</p>
+            <p class="muted"><strong>Категория:</strong> {{ book.category }}</p>
+            <p class="muted"><strong>Год:</strong> {{ book.year }}</p>
+
+            <p class="content-preview">{{ book.description|truncate(170) }}</p>
+
+            <div class="price-box">
+                <div>Покупка: {{ "%.2f"|format(book.price_buy) }} ₽</div>
+                <div>Аренда 2 недели: {{ "%.2f"|format(book.price_rent_2w) }} ₽</div>
+                <div>Аренда 1 месяц: {{ "%.2f"|format(book.price_rent_1m) }} ₽</div>
+                <div>Аренда 3 месяца: {{ "%.2f"|format(book.price_rent_3m) }} ₽</div>
+            </div>
+
+            <div class="card-actions">
+                <a class="ghost-btn" href="{{ url_for('book_detail', book_id=book.id) }}">Открыть</a>
+
+                {% if book.can_be_ordered() %}
+                    {% if current_user.is_authenticated %}
+                        <form method="post" action="{{ url_for('buy_book', book_id=book.id) }}">
+                            <button type="submit" class="primary-btn">Купить</button>
+                        </form>
+                    {% else %}
+                        <a class="primary-btn" href="{{ url_for('login') }}">Войти для покупки</a>
+                    {% endif %}
+                {% else %}
+                    <span class="disabled-note">Недоступно</span>
+                {% endif %}
+            </div>
+        </article>
+    {% else %}
+        <div class="empty-state">По выбранным фильтрам книги не найдены.</div>
+    {% endfor %}
+</section>
+{% endblock %}

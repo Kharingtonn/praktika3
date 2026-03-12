@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Мои заказы{% endblock %}
+
+{% block content %}
+<section class="page-head">
+    <h1>Мои заказы</h1>
+    <p class="muted">Здесь отображаются все покупки и аренды текущего пользователя.</p>
+</section>
+
+<section class="card-list">
+    {% for order in orders %}
+        <article class="card">
+            <div class="card-top">
+                <span class="status status-{{ order.status }}">{{ order.status }}</span>
+                <span class="muted">{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+            </div>
+
+            <h2>{{ order.book.title }}</h2>
+
+            <p><strong>Автор:</strong> {{ order.book.author }}</p>
+            <p><strong>Тип операции:</strong> {% if order.order_type == 'buy' %}Покупка{% else %}Аренда{% endif %}</p>
+
+            {% if order.order_type == 'rent' %}
+                <p><strong>Тариф:</strong> {{ order.rent_plan }}</p>
+                <p><strong>Начало аренды:</strong> {{ order.start_date.strftime('%d.%m.%Y') }}</p>
+                <p><strong>Окончание аренды:</strong> {{ order.end_date.strftime('%d.%m.%Y') }}</p>
+
+                {% if order.status == 'active' %}
+                    {% set days_left = (order.end_date - today).days %}
+                    {% if days_left > 0 %}
+                        <p class="muted">До окончания аренды осталось {{ days_left }} дн.</p>
+                    {% elif days_left == 0 %}
+                        <p class="warning-text">Аренда заканчивается сегодня.</p>
+                    {% else %}
+                        <p class="danger-text">Аренда просрочена на {{ -days_left }} дн.</p>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+            <p><strong>Стоимость:</strong> {{ "%.2f"|format(order.total_price) }} ₽</p>
+        </article>
+    {% else %}
+        <div class="empty-state">У вас пока нет заказов.</div>
+    {% endfor %}
+</section>
+{% endblock %}

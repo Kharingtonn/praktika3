@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="form-card">
+    <h1>{{ page_title }}</h1>
+
+    <form method="post" class="main-form">
+        <label for="title">Название книги</label>
+        <input
+            type="text"
+            id="title"
+            name="title"
+            required
+            value="{{ book.title if book else request.form.get('title', '') }}"
+        >
+
+        <label for="author">Автор</label>
+        <input
+            type="text"
+            id="author"
+            name="author"
+            required
+            value="{{ book.author if book else request.form.get('author', '') }}"
+        >
+
+        <label for="category">Категория</label>
+        <input
+            type="text"
+            id="category"
+            name="category"
+            required
+            value="{{ book.category if book else request.form.get('category', '') }}"
+        >
+
+        <label for="year">Год написания</label>
+        <input
+            type="number"
+            id="year"
+            name="year"
+            required
+            value="{{ book.year if book else request.form.get('year', '') }}"
+        >
+
+        <label for="description">Описание</label>
+        <textarea id="description" name="description" rows="7" required>{{ book.description if book else request.form.get('description', '') }}</textarea>
+
+        <label for="price_buy">Цена покупки</label>
+        <input
+            type="number"
+            step="0.01"
+            id="price_buy"
+            name="price_buy"
+            required
+            value="{{ book.price_buy if book else request.form.get('price_buy', '') }}"
+        >
+
+        <label for="price_rent_2w">Цена аренды на 2 недели</label>
+        <input
+            type="number"
+            step="0.01"
+            id="price_rent_2w"
+            name="price_rent_2w"
+            required
+            value="{{ book.price_rent_2w if book else request.form.get('price_rent_2w', '') }}"
+        >
+
+        <label for="price_rent_1m">Цена аренды на 1 месяц</label>
+        <input
+            type="number"
+            step="0.01"
+            id="price_rent_1m"
+            name="price_rent_1m"
+            required
+            value="{{ book.price_rent_1m if book else request.form.get('price_rent_1m', '') }}"
+        >
+
+        <label for="price_rent_3m">Цена аренды на 3 месяца</label>
+        <input
+            type="number"
+            step="0.01"
+            id="price_rent_3m"
+            name="price_rent_3m"
+            required
+            value="{{ book.price_rent_3m if book else request.form.get('price_rent_3m', '') }}"
+        >
+
+        <label for="status">Статус книги</label>
+        <select id="status" name="status">
+            {% set current_status = book.status if book else request.form.get('status', 'available') %}
+            <option value="available" {% if current_status == "available" %}selected{% endif %}>available</option>
+            <option value="limited" {% if current_status == "limited" %}selected{% endif %}>limited</option>
+            <option value="unavailable" {% if current_status == "unavailable" %}selected{% endif %}>unavailable</option>
+            <option value="archived" {% if current_status == "archived" %}selected{% endif %}>archived</option>
+        </select>
+
+        <label for="available_copies">Количество экземпляров</label>
+        <input
+            type="number"
+            id="available_copies"
+            name="available_copies"
+            required
+            value="{{ book.available_copies if book else request.form.get('available_copies', '1') }}"
+        >
+
+        <button type="submit" class="primary-btn">{{ submit_text }}</button>
+    </form>
+</section>
+{% endblock %}

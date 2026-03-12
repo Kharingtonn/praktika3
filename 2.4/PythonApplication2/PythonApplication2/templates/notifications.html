@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Уведомления{% endblock %}
+
+{% block content %}
+<section class="page-head">
+    <h1>Уведомления</h1>
+    <p class="muted">Автоматические напоминания об окончании срока аренды появляются здесь.</p>
+</section>
+
+<div class="card-actions">
+    <form method="post" action="{{ url_for('read_all_notifications') }}">
+        <button type="submit" class="ghost-btn">Отметить все как прочитанные</button>
+    </form>
+</div>
+
+<section class="card-list">
+    {% for item in notifications %}
+        <article class="card">
+            <div class="card-top">
+                <span class="status {% if item.is_read %}status-read{% else %}status-unread{% endif %}">
+                    {% if item.is_read %}прочитано{% else %}новое{% endif %}
+                </span>
+                <span class="muted">{{ item.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+            </div>
+
+            <p class="post-body">{{ item.message }}</p>
+        </article>
+    {% else %}
+        <div class="empty-state">Уведомлений пока нет.</div>
+    {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Админ - заказы{% endblock %}
+
+{% block content %}
+<section class="page-head">
+    <h1>Интерфейс администратора - управление заказами и арендами</h1>
+    <p class="muted">Здесь можно отслеживать покупки и возвращать активные аренды.</p>
+</section>
+
+<section class="table-card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Пользователь</th>
+                    <th>Книга</th>
+                    <th>Тип</th>
+                    <th>План</th>
+                    <th>Начало</th>
+                    <th>Окончание</th>
+                    <th>Цена</th>
+                    <th>Статус</th>
+                    <th>Просрочка</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.user.username }}</td>
+                        <td>{{ order.book.title }}</td>
+                        <td>{% if order.order_type == 'buy' %}Покупка{% else %}Аренда{% endif %}</td>
+                        <td>{{ order.rent_plan or '-' }}</td>
+                        <td>{{ order.start_date.strftime('%d.%m.%Y') }}</td>
+                        <td>{{ order.end_date.strftime('%d.%m.%Y') if order.end_date else '-' }}</td>
+                        <td>{{ "%.2f"|format(order.total_price) }}</td>
+                        <td>{{ order.status }}</td>
+                        <td>
+                            {% if order.order_type == 'rent' and order.status == 'active' %}
+                                {% set days_left = (order.end_date - today).days %}
+                                {% if days_left < 0 %}
+                                    {{ -days_left }} дн.
+                                {% else %}
+                                    -
+                                {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.order_type == 'rent' and order.status == 'active' %}
+                                <form method="post" action="{{ url_for('admin_return_order', order_id=order.id) }}">
+                                    <button type="submit" class="primary-btn small-btn">Вернуть</button>
+                                </form>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="11">Заказов пока нет.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Админ - книги{% endblock %}
+
+{% block content %}
+<section class="page-head">
+    <h1>Интерфейс администратора - управление книгами</h1>
+    <p class="muted">Здесь можно добавлять книги, редактировать цены, статусы и количество экземпляров.</p>
+</section>
+
+<div class="card-actions">
+    <a href="{{ url_for('admin_new_book') }}" class="primary-btn">Добавить книгу</a>
+</div>
+
+<section class="table-card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Автор</th>
+                    <th>Категория</th>
+                    <th>Год</th>
+                    <th>Цена покупки</th>
+                    <th>Аренда 2 нед.</th>
+                    <th>Аренда 1 мес.</th>
+                    <th>Аренда 3 мес.</th>
+                    <th>Статус</th>
+                    <th>Доступность</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                    <tr>
+                        <td>{{ book.id }}</td>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.category }}</td>
+                        <td>{{ book.year }}</td>
+                        <td>{{ "%.2f"|format(book.price_buy) }}</td>
+                        <td>{{ "%.2f"|format(book.price_rent_2w) }}</td>
+                        <td>{{ "%.2f"|format(book.price_rent_1m) }}</td>
+                        <td>{{ "%.2f"|format(book.price_rent_3m) }}</td>
+                        <td>{{ book.status }}</td>
+                        <td>{{ book.available_copies }}</td>
+                        <td>
+                            <div class="action-inline">
+                                <a class="ghost-btn small-btn" href="{{ url_for('admin_edit_book', book_id=book.id) }}">Изменить</a>
+                                <form method="post" action="{{ url_for('admin_delete_book', book_id=book.id) }}" onsubmit="return confirm('Удалить книгу?');">
+                                    <button type="submit" class="danger-btn small-btn">Удалить</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="12">Книг пока нет.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
